@@ -1,0 +1,5 @@
+run this :
+	python3 manage.py process_tasks
+	
+After that access 
+	<url>/backend/start_scheduler

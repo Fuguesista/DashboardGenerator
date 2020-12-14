@@ -1,10 +1,10 @@
 
 ## About
 
-This project from my Final project in my bachelor degree
-So feel free to take this up as your reference
-Further update with bugs and others, just PM at ariefgunawansujiono@gmail.com
-Main Link <a href="https://gitlab.com/ariefgunawansujiono/dashboard-generator-with-django">Here</a>
+This project from my Final project in my bachelor degree. So, feel free to take this up as your reference
+
+## ETC
+Further update with bugs and others, just PM at ariefgunawansujiono@gmail.com. Main Link <a href="https://gitlab.com/ariefgunawansujiono/dashboard-generator-with-django">Here</a>
 
 
 ## Special Thanks To

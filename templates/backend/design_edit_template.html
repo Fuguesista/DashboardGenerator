@@ -1,0 +1,17 @@
+<div class="container-fluid">
+	<div class="row p-2">
+		<div class="col-12">
+			<button class="btn btn-danger w" onclick="close_selection()" type="button"><h1 class='h1'>X</h1></button>
+			<button class="btn btn-danger mt-2" onclick="delete_row('{{ row_selected }}')" type="button"><h1 class='h4'>Delete Row</h1></button>
+				<button class="btn btn-danger mt-2" onclick="reset_selected_template('{{ row_selected }}','{{ col_selected }}')" type="button"><h1 class='h4'>Reset Template</h1></button>
+		</div>
+		<div class="col-10">
+			<!-- {{ row_selected }}, {{ col_selected }} -->
+			<div class="owl-carousel owl-theme">
+				<!-- https://getbootstrap.com/docs/4.0/utilities/text/ -->
+				<!-- https://getbootstrap.com/docs/4.0/utilities/borders/ -->
+				
+			</div>
+		</div>
+	</div>
+</div>

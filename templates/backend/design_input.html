@@ -1,0 +1,78 @@
+{% load static %}
+<div class="container-fluid">
+	{% for index1, data1 in data_design.items %}
+		<div class="row m-2 d-flex">
+			{% for index2, data2 in data1.items %}
+				<div class="{{ data2.tipe_col }} pl-1 pr-2 content">
+					{% if data2.tipe == 0 or data2.tipe == "0" %}
+						<button class="btn btn-primary w-100" onclick="show_list_template('{{ index1 }}','{{ index2 }}')" type="button"><h1 class='h1'>+</h1></button>
+					{% endif %}
+					{% if data2.tipe == "1" %}
+						<button onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" class="w-100" type="button">
+							<div class="row text-center">
+								<div class="col-12">
+									&lt;text&gt;
+								</div>
+							</div>
+							<div class="row text-center">
+								<div class="col-12">
+									&lt;Data Processed&gt;
+								</div>
+							</div>
+						</button>
+					{% endif %}
+					{% if data2.tipe == "2" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_2.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "3" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_3.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "4" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_4.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "5" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_5.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "6" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_6.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "7" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_7.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "8" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_8.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "9" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_9.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "10" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_10.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "11" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_11.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "12" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_12.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "13" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_13.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "14" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_14.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+					{% if data2.tipe == "15" %}
+						<div class="img-thumbnail img-fluid" onclick="show_edit_template('{{ index1 }}','{{ index2 }}')" style="margin:auto"><img src="{% static 'img/Template_15.PNG' %}" class="beautifully-photo" style="max-width: 100%"></div>
+					{% endif %}
+				</div>
+			{% endfor %}
+		</div>
+	{% endfor %}
+	
+	<div class="row mt-2 mb-3">
+		<div class="col-4">
+		</div>
+		<div class="col-4">
+			<button class="btn btn-primary w-100" onclick="show_add_row()" type="button"><h1 class='h1'>Add row +</h1></button>
+		</div>
+	</div>
+</div>

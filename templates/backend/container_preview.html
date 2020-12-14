@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		{% include "header-backend.html" %}
+	</head>
+	<body class='bg-light'>
+		{% include "backend/navbar.html" %}
+		<div class='container'>
+			<div class="row h-50">
+				<div class="col-12 p-2 text-center border">
+					Last User Updated {{ last_user_update }}
+				</div>
+				<div class="col-12 p-2 text-center border">
+					Last Design Updated {{ last_design_update }}
+				</div>
+			</div>
+		</div>
+		<div class='container-fluid' style="height:700px">
+			<iframe src="{{ base_http }}{{ request.get_host }}/backend/view_dashboard_generated/{{ kode_dashboard }}" style="width:100%;height:100%"></iframe>
+		</div>
+		
+		<!-- End Additional Function (include Buttons) -->
+		{% include "footer.html" %}
+		
+	</body>
+</html>

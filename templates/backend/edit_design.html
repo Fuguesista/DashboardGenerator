@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		{% include "header-backend.html" %}
+		<style>
+			.owl-carousel .owl-stage{display: flex;}
+			.article-items {
+				display: flex;
+				flex: 1 0 auto;
+				height: 100%;
+			}
+			.aticle-box {
+				position: relative;
+				overflow: hidden;
+				/* margin-bottom: 80px; *//*This is optional*/
+				display: flex;
+				flex-direction: column;
+				align-items: stretch;
+			}
+			.content {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+			}
+			.beautifully-photo {
+				max-height: 200px;
+			}
+			
+		</style>
+	</head>
+	<body class='bg-light'>
+		{% include "backend/navbar.html" %}
+		<!-- Additional Function (include Buttons) -->
+		<div class='container'>
+			<div class="row h-50 border">
+				<div class="col-12 p-2" id="container_design">
+					
+				</div>
+			</div>
+			<div class="row border h-25">
+				<div class="col-12 d-none p-2" id="container_selection">
+					
+				</div>
+			</div>
+			<div class="row border">
+				<div class="col-12 p-2" id="container_preview">
+					<div class="container-fluid">
+						<iframe id="iframe_preview" style="height:500px" class="w-100"></iframe>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- End Additional Function (include Buttons) -->
+		{% include "footer.html" %}
+		{% include "enable_ajax.html" %}
+		<!-- Additional Modal -->
+		<div class="modal fade" id="insert_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			
+		</div>
+		<!-- End Additional Modal -->
+		<script>
+			var can_submit = true;
+			
+			//Begin Refresh Iframe
+			function reloadIFrame() {
+				document.getElementById("iframe_preview").contentDocument.location.reload(true);
+			}
+			//End Refresh Iframe
+			var this_kode_dashboard = "{{ kode_dashboard }}";
+			var count_row_where = 100;
+			
+			$( document ).ready(function() {
+				$("#iframe_preview").attr("src", "{{ base_http }}{{ request.get_host }}/backend/view_dashboard_generated/{{ kode_dashboard }}");
+				window.setInterval("reloadIFrame();", 10000);
+				load_design();
+				
+			});
+			
+			function load_design() {
+				data_sending = { kode_dashboard_sending:this_kode_dashboard};
+				$.ajax({
+					type: "POST",
+					url : "{{ base_http }}{{ request.get_host }}/backend/generate_design_dashboard",
+					data: data_sending,
+					contentType: 'application/x-www-form-urlencoded',
+					datatype: "text",
+					success: function(DataReturn) {
+						$("#container_design").html(DataReturn);
+					}
+				});
+			}
+			
+			function close_selection() {
+				$("#container_selection").addClass("d-none");
+				$("#container_selection").html("");
+			}
+			
+			function show_add_row() {
+				if (can_submit) {
+					can_submit = false;
+					data_sending = { kode_dashboard_sending:this_kode_dashboard};
+					$.ajax({
+						type: "POST",
+						url : "{{ base_http }}{{ request.get_host }}/backend/generate_design_dashboard_add_input",
+						data: data_sending,
+						contentType: 'application/x-www-form-urlencoded',
+						datatype: "text",
+						success: function(DataReturn) {
+							close_selection();
+							$("#container_selection").removeClass("d-none");
+							$("#container_selection").html(DataReturn);
+							can_submit = true;
+						}
+					});
+				}
+			}
+			
+			function add_row(this_many_column) {
+				if (can_submit) {
+					can_submit = false;
+					data_sending = { kode_dashboard_sending:this_kode_dashboard, many_column:this_many_column};
+					$.ajax({
+						type: "POST",
+						url : "{{ base_http }}{{ request.get_host }}/backend/generate_design_dashboard_add_row",
+						data: data_sending,
+						contentType: 'application/x-www-form-urlencoded',
+						datatype: "text",
+						success: function(DataReturn) {
+							close_selection();
+							load_design();
+							can_submit = true;
+						}
+					});
+				}
+			}
+			
+			function show_list_template(this_row, this_col) {
+				if (can_submit) {
+					can_submit = false;
+					data_sending = { kode_dashboard_sending:this_kode_dashboard, current_row:this_row, current_col:this_col};
+					$.ajax({
+						type: "POST",
+						url : "{{ base_http }}{{ request.get_host }}/backend/generate_design_dashboard_template",
+						data: data_sending,
+						contentType: 'application/x-www-form-urlencoded',
+						datatype: "text",
+						success: function(DataReturn) {
+							close_selection();
+							can_submit = true;
+							$("#container_selection").removeClass("d-none");
+							$("#container_selection").html(DataReturn);
+							$('.owl-carousel').owlCarousel({
+								loop:false,
+								nav:false,
+								margin:10,
+								responsive:{
+									0:{
+										items:4
+									}
+							}
+							});
+						}
+					});
+				}
+			}
+			
+			function show_edit_template(this_row, this_col) {
+				if (can_submit) {
+					can_submit = false;
+					data_sending = { kode_dashboard_sending:this_kode_dashboard, current_row:this_row, current_col:this_col};
+					$.ajax({
+						type: "POST",
+						url : "{{ base_http }}{{ request.get_host }}/backend/generate_design_dashboard_edit_template",
+						data: data_sending,
+						contentType: 'application/x-www-form-urlencoded',
+						datatype: "text",
+						success: function(DataReturn) {
+							close_selection();
+							$("#container_selection").removeClass("d-none");
+							$("#container_selection").html(DataReturn);
+							can_submit = true;
+						}
+					});
+				}
+			}
+			
+			function reset_selected_template(this_row, this_col) {
+				if (can_submit) {
+					can_submit = false;
+					data_sending = { kode_dashboard_sending:this_kode_dashboard, current_row:this_row, current_col:this_col};
+					$.ajax({
+						type: "POST",
+						url : "{{ base_http }}{{ request.get_host }}/backend/generate_design_dashboard_reset_template",
+						data: data_sending,
+						contentType: 'application/x-www-form-urlencoded',
+						datatype: "text",
+						success: function(DataReturn) {
+							close_selection();
+							load_design();
+							can_submit = true;
+						}
+					});
+				}
+			}
+			
+			function open_input_template(this_row, this_col, this_tipe_template) {
+				if (can_submit) {
+					can_submit = false;
+					data_sending = { kode_dashboard_sending:this_kode_dashboard, 
+					current_row:this_row, current_col:this_col,
+					tipe_template:this_tipe_template};
+					$.ajax({
+						type: "POST",
+						url : "{{ base_http }}{{ request.get_host }}/backend/show_template_modal",
+						data: data_sending,
+						contentType: 'application/x-www-form-urlencoded',
+						datatype: "text",
+						success: function(DataReturn) {
+							can_submit = true;
+							close_selection();
+							$("#insert_modal").html(DataReturn);
+							$("#insert_modal").modal('show');
+						}
+					});
+				}
+			}
+			
+			function add_template() {
+				var formData = new FormData(document.getElementById("data_template"));
+				$.ajax({
+					type: "POST",
+					url : "{{ base_http }}{{ request.get_host }}/backend/process_template",
+					data: formData,
+					cache: false,
+					contentType: false, //this is requireded please see answers above
+					processData: false, //this is requireded please see answers above
+					success: function(DataReturn) {
+						can_submit = true;
+						if (DataReturn == "Berhasil") { // Bila Berhasil
+							alert("Data Berhasil Disimpan");
+							$("#insert_modal").modal('hide');
+							load_design();
+						}
+						else
+							alert(DataReturn);
+					}
+				});
+			}
+			
+			
+			
+			function delete_row(this_row) {
+				if (can_submit) {
+					can_submit = false;
+					data_sending = { kode_dashboard_sending:this_kode_dashboard, 
+					current_row:this_row};
+					$.ajax({
+						type: "POST",
+						url : "{{ base_http }}{{ request.get_host }}/backend/generate_design_dashboard_delete_row",
+						data: data_sending,
+						contentType: 'application/x-www-form-urlencoded',
+						datatype: "text",
+						success: function(DataReturn) {
+							can_submit = true;
+							close_selection();
+							load_design();
+						}
+					});
+				}
+			}
+			
+			function toggle_disable_include_where() {
+				if ($("#include_where").prop("checked") == true) {
+					$("#container_include_where").removeClass("d-none");
+					$("#container_add_where").removeClass("d-none");
+				}
+				else {
+					$("#container_include_where").addClass("d-none");
+					$("#container_add_where").addClass("d-none");
+				}
+			}
+			
+		</script>
+		
+	</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		{% include "header.html" %}
+		<link rel="stylesheet" href="{% static 'login/Login.css' %}">
+	</head>
+	<body>
+		<div class="container">
+			<form class="form-signin" action="{{ base_http }}{{ request.get_host }}" method="post">
+				{% if additional_message != "" %}
+					<div class="alert alert-danger" role="alert">
+					{{ additional_message }}.
+				</div>
+				{% endif %}
+				{% csrf_token %}
+				<h2 class="form-signin-heading">Login</h2>
+				<label for="inputEmail" class="sr-only">Username</label>
+				<input type="text" id="inputEmail" class="form-control" placeholder="username" required="" autofocus="" name="username" value="{{ username }}">
+				<label for="inputPassword" class="sr-only">Password</label>
+				<input type="password" id="inputPassword" class="form-control" placeholder="password" required="" name="password" value="{{ password }}">
+				<input type="submit" class="btn btn-lg btn-primary btn-block" name="submit" value="Login">  
+			</form>
+
+		</div> <!-- /container -->
+	</body>
+	{% include "footer.html" %}
+</html

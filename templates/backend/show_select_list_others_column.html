@@ -1,0 +1,9 @@
+{% for key1, value1 in data_table.items %}
+	{% if key1 == target_tabel %}
+		<select name="relations_{{ id_tabel }}_{{ id_column }}_{{ key1 }}">
+		{% for key2, value2 in value1.list_column.items %}
+			<option value="{{ key2 }}" {% if key2 == "0" %}selected{% endif %}>{{ value2.nama_column }}</option>
+		{% endfor %}
+		</select>
+	{% endif %}
+{% endfor %}

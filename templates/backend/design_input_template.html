@@ -1,0 +1,49 @@
+{% load static %}
+<div class="container-fluid">
+	<div class="row p-2">
+		<!-- <div class="col-2"> -->
+			
+		<!-- </div> -->
+		<div class="col-12">
+			<!-- {{ row_selected }}, {{ col_selected }} -->
+			<div class="owl-carousel owl-theme d-flex align-items-center">
+				<!-- https://getbootstrap.com/docs/4.0/utilities/text/ -->
+				<!-- https://getbootstrap.com/docs/4.0/utilities/borders/ -->
+				<div class="item active text-center text-center">
+					<button class="btn btn-danger w-100" onclick="close_selection()" type="button"><h1 class='h1'>X</h1></button>
+				</div>
+				<div class="item active text-center text-center">
+					<button class="btn btn-danger mt-2" onclick="delete_row('{{ row_selected }}')" type="button"><h1 class='h6'>Delete Row</h1></button>
+				</div>
+				<div class="item border mt-2 text-center">
+					<div class="container-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','1')">
+						<div class="row text-center">
+							<div class="col-12">
+								<h1>&lt;text&gt;</h1>
+							</div>
+						</div>
+						<div class="row text-center">
+							<div class="col-12">
+								<h1>&lt;Data&gt;</h1>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','2')"><img src="{% static 'img/Template_2.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','3')"><img src="{% static 'img/Template_3.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','4')"><img src="{% static 'img/Template_4.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','5')"><img src="{% static 'img/Template_5.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','6')"><img src="{% static 'img/Template_6.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','7')"><img src="{% static 'img/Template_7.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','8')"><img src="{% static 'img/Template_8.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','9')"><img src="{% static 'img/Template_9.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','10')"><img src="{% static 'img/Template_10.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','11')"><img src="{% static 'img/Template_11.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','12')"><img src="{% static 'img/Template_12.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','13')"><img src="{% static 'img/Template_13.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','14')"><img src="{% static 'img/Template_14.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+				<div class="item img-thumbnail img-fluid" onclick="open_input_template('{{ row_selected }}','{{ col_selected }}','15')"><img src="{% static 'img/Template_15.PNG' %}" class="img-fluid" style="max-width: 100%;height: auto"></div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,29 @@
+<div class="row" id="row_where_{{ row_count }}">
+	<div class="col-5 overflow-auto pr-2">
+		<select name="selectwhereidcol_{{ row_count }}" >
+			{% for index,data in list_column.items %}
+				<option value="{{ data.id }}" {% if index == 0 %} selected {% endif %}>{{ data.nama_column }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="col-3 overflow-auto pl-1">
+		<select name="optionwhere_{{ row_count }}" >
+			<option value="eq">Equal</option>
+			<option value="gt">Lebih Besar</option>
+			<option value="gte">Lebih Besar Sama</option>
+			<option value="lt">Lebih Kecil</option>
+			<option value="lte">Lebih Kecil Sama</option>
+			<option value="ne">Not Equal</option>
+			<option value="like">Mengandung Kata</option>
+			<option value="begin">Berawalan Dari</option>
+			<option value="end">Berakhir Dari</option>
+			<option value="not_like">Tidak Mengandung Kata</option>
+		</select>
+	</div>
+	<div class="col-3">
+		<input class="form-control" type="text" name="characterfilter_{{ row_count }}">
+	</div>
+	<div class="col-1 mb-2">
+		<button class="btn btn-danger" onclick="delete_where('{{ row_count }}')" type="button"><h1 class='h5'>x</h1></button>
+	</div>
+</div>

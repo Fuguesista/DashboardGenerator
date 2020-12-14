@@ -1,0 +1,112 @@
+<div class="modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="exampleModalLabel">Insert Dashboard Baru</h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body" id="modal_body">
+			<form id="insert_new_dashboard" method="post" enctype="multipart/form-data" >
+				<div class="container-fluid form-group">
+					<div class="row">
+						<div class="col-5">
+							<label>Nama Dashboard : </label>
+						</div>
+						<div class="col-1">
+						</div>
+						<div class="col-6">
+							<label>Data Source : </label>
+						</div>
+					</div>
+					<div class="row pb-3" style="border-bottom:1.5px solid black">
+						<div class="col-4">
+							<input type="text" class="w-100" name="dashboard_name" id="dashboard_name">
+						</div>
+						<div class="col-4">
+							<div class="radio">
+								<label><input type="radio" name="source_type" value="database" id="data_source" onchange="toggle_hidden(this)" checked>Dari Database</label>
+							</div>
+						</div>
+						<div class="col-4">
+							<div class="radio">
+								<label><input type="radio" name="source_type" value="others" id="data_source" onchange="toggle_hidden(this)">CSV (";")</label>
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2" id="from_database">
+						<div class="col-12">
+							<div class="row">
+								<div class="col-6">
+									<label>Informasi Database : </label>
+								</div>
+								<div class="col-6">
+									<label>Tipe Koneksi : </label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-6 w-100">
+									<input type="text" name="hostname" id="hostname" placeholder="Hostname">
+								</div>
+								<div class="col-6 w-100">
+									<select class="form-control" name="connection_type">
+										<option value="postgresql">PostgreSQL</option>
+										<option value="mysql">MySQL</option>
+									</select>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-6 w-100">
+									<input type="text" name="username" id="username" placeholder="Database Username">
+								</div>
+							</div>
+							<div class="row pt-2">
+								<div class="col-6 w-100">
+									<input type="password" name="password" id="password" placeholder="Database Password">
+								</div>
+							</div>
+							<div class="row pt-2">
+								<div class="col-6 w-100">
+									<input type="text" name="database_name" id="database_name" placeholder="Database Name">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row mt-2 d-none" id="from_excel">
+						<div class="col-12">
+							<div class="row">
+								<div class="custom-file">
+									<input type="file" class="custom-file-input" id="customFile" name="file_receiver">
+									<label class="custom-file-label" for="customFile">Choose file</label>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-primary" onclick="add_dashboard()">Save</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	function toggle_hidden(div_el) {
+		console.log(div_el);
+		if ($(div_el).val() == "database") {
+			$("#from_database").removeClass("d-none");
+			$("#from_excel").addClass("d-none");
+		}
+		else {
+			$("#from_database").addClass("d-none");
+			$("#from_excel").removeClass("d-none");
+		}
+	}
+	$(".custom-file-input").on("change", function() {
+		var fileName = $(this).val().split("\\").pop();
+		$(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+	});
+</script>

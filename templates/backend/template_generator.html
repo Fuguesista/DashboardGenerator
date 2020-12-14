@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		{% include "header_generator.html" %}
+		<link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
+		{% include "footer_generator.html" %}
+		{% load custom_tags %}
+	</head>
+	<body class="p-2">
+		<script>
+			var list_colour = ['rgba(255, 115, 0, 1)',
+                'rgba(82, 215, 38, 1)',
+                'rgba(255, 236, 0, 1)',
+                'rgba(0, 126, 214, 1)',
+                'rgba(124, 221, 221, 1)'];
+			var list_colour_half_visible = ['rgba(255, 115, 0, 0.5)',
+                'rgba(82, 215, 38, 0.5)',
+                'rgba(255, 236, 0, 0.5)',
+                'rgba(0, 126, 214, 0.5)',
+                'rgba(124, 221, 221, 0.5)'];
+			var temp_count = 0;
+			function toggleDataSeriesCanvas(e) {
+				if(typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+					e.dataSeries.visible = false;
+				}
+				else {
+					e.dataSeries.visible = true;            
+				}
+				e.chart.render();
+			}
+		</script>
+		<div class="container-fluid mt-2">
+			<!-- https://stackoverflow.com/questions/39373561/how-get-sum-of-total-values-in-stackedbar-chartjs -->
+			{% for index1, data1 in data_design.items %}
+				<div class="row m-2 mb-4">
+					{% for index2, data2 in data1.items %}
+						<div class="{{ data2.tipe_col }} pl-1 pr-2 {{ data2.data_border_string }}">
+							{% if data2.tipe == "1" or data2.tipe == 1 %}
+								{% if data2.data_setting.include_text == 1%}
+									<div class="row text-center">
+										<div class="col-12">
+											<h1 class="{%if data2.tipe_col == 'col-12' %}h1{% elif data2.tipe_col == 'col-6' %}h3{% elif data2.tipe_col == 'col-4' %}h5{% elif data2.tipe_col == 'col-3' %}h6{% endif %}"> {{ data2.data_setting.input_text }}
+											</h1>
+										</div>
+									</div>
+								{% endif %}
+								{% if data2.data_setting.include_data == 1 and data2.already_processed == 1 %}
+									<div class="row text-center">
+										<div class="col-12">
+											<h1 class="h5">{{ data2.data_setting.append_data_before }}{{ data2.data_processed }}</h1>
+										</div>
+									</div>
+								{% endif %}
+							{% else %}
+								{% if data2.data_setting.include_text == 1 and data2.tipe != 0 %}
+									<div class="row text-center">
+										<div class="col-12">
+											<h1 class="{%if data2.tipe_col == 'col-12' %}h1{% elif data2.tipe_col == 'col-6' %}h3{% elif data2.tipe_col == 'col-4' %}h5{% elif data2.tipe_col == 'col-3' %}h6{% endif %}"> {{ data2.data_setting.input_text }}
+											</h1>
+										</div>
+									</div>
+								{% endif %}
+								{% if data2.tipe == "2" or data2.tipe == "5" or data2.tipe == "3"%}
+									<div style="margin:auto">
+										<canvas id="{{ data2.kode_template }}" style="height: {{ height_chart }}px; width: 100%;"></canvas>
+									</div>
+									<script>
+										//10, 20, 30
+										var list_data_background_{{ data2.kode_template }} = [];
+										temp_count = 0;
+										{% for index3, data3 in data2.data_processed.items %}list_data_background_{{ data2.kode_template }}.push(list_colour[temp_count%5]);
+										temp_count++;{% endfor %}
+										
+										var data_{{ data2.kode_template }} = {
+											datasets: [{
+														data: [{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %} {{data3.total}}{% endfor %}
+														],
+														backgroundColor: list_data_background_{{ data2.kode_template }},
+														}],
+											labels: [{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %} '{{ data3.header }}'{% endfor %}
+											]
+										};
+										var options_{{ data2.kode_template }} = {
+											responsive: true,
+											{% if data2.data_setting.include_legend == 0 %}
+												legend: {
+															display: false
+														}
+											{% else %}
+												legend: {
+															display: true
+														}
+											{% endif %}
+										};
+									</script>
+								{% elif data2.tipe == "10"%}
+									<div style="margin:auto">
+										<canvas id="{{ data2.kode_template }}" style="height: {{ height_chart }}px; width: 100%;"></canvas>
+									</div>
+									<script>
+										var data_{{ data2.kode_template }} = {
+											datasets: [
+														{% for index3, data3 in data2.data_processed.items %}
+															{% if index3 != "0" %},{% endif %}
+														{
+															label:"{{ data3.dataset_name }}",
+															data: [{% for index4, data4 in data3.data.items %}{% if index4 != "0" %},{% endif %} {{ data4.total }}{% endfor %}],
+															backgroundColor: list_colour[{{ index3 }}%5]
+														}
+														{% endfor %}
+													],
+											labels: [{% for index3, data3 in data2.data_processed.items %}{% if index3 == "0" %} {% for index4, data4 in data3.data.items %}{% if index4 != "0" %},{% endif %}"{{ data4.header }}"{% endfor %} {% endif %}{% endfor %}]
+										};
+										var options_{{ data2.kode_template }} = {
+											responsive: true,											
+											hover: {
+												intersect: true
+											},
+											tooltips: {
+												mode: 'label',
+												position: 'nearest',
+												caretSize: 0,
+												intersect: true
+												{% if data2.data_setting.tipe_stack == 0 %}
+												,callbacks: {
+													footer: (tooltipItems, data) => {
+														let total = tooltipItems.reduce((a, e) => a + parseInt(e.yLabel), 0);
+														return 'Total: ' + total;
+													}
+												}
+												{% endif %}
+											}
+											{% if data2.data_setting.tipe_stack == 0 %}
+												,scales: {
+													xAxes: [{
+														stacked: true,
+													}],
+													yAxes: [{
+														stacked: true
+													}]
+												}
+											{% endif %}
+											
+										};
+									</script>
+								{% elif data2.tipe == "12"%}
+									<div style="margin:auto">
+										<canvas id="{{ data2.kode_template }}" style="height: {{ height_chart }}px; width: 100%;"></canvas>
+									</div>
+									<script>
+										var data_{{ data2.kode_template }} = {
+											datasets: [
+														{% for index3, data3 in data2.data_processed.items %}
+															{% if index3 != "0" %},{% endif %}
+														{
+															label:"{{ data3.dataset_name }}",
+															data: [{% for index4, data4 in data3.data.items %}{% if index4 != "0" %},{% endif %} {{ data4.total }}{% endfor %}],
+															backgroundColor: list_colour_half_visible[{{ index3 }}%5],
+															borderColor: list_colour[{{ index3 }}%5],
+															fill:{% if data2.data_setting.is_filled == 1 %}true{% else %}false{% endif %}
+														}
+														{% endfor %}
+													],
+											labels: [{% for index3, data3 in data2.data_processed.items %}{% if index3 == "0" %} {% for index4, data4 in data3.data.items %}{% if index4 != "0" %},{% endif %}"{{ data4.header }}"{% endfor %} {% endif %}{% endfor %}]
+										};
+										var options_{{ data2.kode_template }} = {
+											responsive: true,
+											hover: {
+												mode: 'dataset',
+												intersect: true
+											}{% if data2.data_setting.is_line_straight == 1 %},
+											elements: {
+												line: {
+													tension: 0.000001
+												}
+											}{% endif %},
+											{% if data2.data_setting.tipe_stack == 0 %}
+											scales: {
+												yAxes: [{
+													stacked: true
+												}]
+											},
+											{% endif %}
+											tooltips: {
+												mode: 'label',
+												position: 'nearest',
+												caretSize: 0,
+												intersect: true
+												{% if data2.data_setting.tipe_stack == 0 %}
+												,callbacks: {
+													footer: (tooltipItems, data) => {
+														let total = tooltipItems.reduce((a, e) => a + parseInt(e.yLabel), 0);
+														return 'Total: ' + total;
+													}
+												}
+												{% endif %}
+											}
+											{% if data2.data_setting.tipe_stack == 0 %}
+												,scales: {
+													yAxes: [{
+														stacked: true
+													}]
+												}
+											{% endif %}
+											
+										};
+									</script>
+								{% elif data2.tipe == "13"%}
+									<div style="margin:auto">
+										<div id="{{ data2.kode_template }}" style="height: {{ height_chart }}px; width: 100%;"></div>
+									</div>
+									<script>
+									
+									var config_{{ data2.kode_template }} = {
+										zoomEnabled: true,
+										legend: {
+											itemclick: toggleDataSeriesCanvas
+										},
+										toolTip: {
+											shared: true
+										},
+										data: [{% for index3, data3 in data2.data_processed.items %}
+													{% if index3 != "0" %},{% endif %}
+												{
+													name: "{{ data3.dataset_name }}",
+													type: {% if data2.data_setting.tipe_stack == 0 %}"stackedArea"{%else%}"area"{% endif %},
+													{% if data2.data_setting.tipe_stack == 0 %}
+														{% if data2.data_processed|length_minus_one_to_string == index3 %}
+															toolTipContent: "<span style=\"color:#C0504E\"><strong>{name}: </strong></span> {y}",//<br><b>Total:<b> #total
+														{% else %}
+															toolTipContent: "<span style=\"color:#C0504E\"><strong>{name}: </strong></span> {y}",//<br><b>Total:<b> #total
+														{% endif %}
+													{%else%}
+													toolTipContent: "<span style=\"color:#C0504E\"><strong>{name}: </strong></span> {y}",
+													{% endif %}
+													showInLegend: true,
+													dataPoints: [{% for index4, data4 in data3.data.items %}{% if index4 != "0" %},{% endif %} {label:"{{ data4.header }}", y:{{ data4.total }}}{% endfor %}]
+												}
+											{% endfor %}
+										]
+										
+									};
+									</script>
+								{% elif data2.tipe == "4"%}
+									<div style="margin:auto">
+										<div id="{{ data2.kode_template }}" style="height: {{ height_chart }}px; width: 100%;"></div>
+									</div>
+									<script>
+										var datapoints_{{ data2.kode_template }} = [{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %}{ label: "{{data3.header}}", y: {{data3.total}} }{% endfor %}];
+										var config_{{ data2.kode_template }} = {
+											theme: "light2",
+											zoomEnabled: true,
+											legend: {
+												horizontalAlign: "right",
+												verticalAlign: "center"
+											},
+											axisY:{
+												crosshair: {
+													enabled: true,
+													snapToDataPoint: true
+												}
+											},
+											axisX:{
+												crosshair: {
+													enabled: true,
+													snapToDataPoint: true
+												}
+											},
+											data: [{
+												type: "line",
+												indexLabelFontSize: 16,
+												dataPoints: datapoints_{{ data2.kode_template }}
+											}]
+										};
+									</script>
+								{% elif data2.tipe == "6"%}
+									<div style="margin:auto">
+										<canvas id="{{ data2.kode_template }}" style="height: {{ height_chart }}px; width: 100%;"></canvas>
+									</div>
+									<script>
+										var data_{{ data2.kode_template }} = {
+												datasets: [{
+															label:"total",
+															data: [{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %} {{data3.total}}{% endfor %}
+															],
+															fill:false,
+															borderColor:"rgb(75, 192, 192)",
+															lineTension:0.1
+														}],
+												labels: [
+													{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %} '{{ data3.header }}'{% endfor %}
+												]
+											};
+										var options_{{ data2.kode_template }} = {};
+									</script>
+								{% elif data2.tipe == "7"%}
+									<div style="margin:auto">
+										<div id="{{ data2.kode_template }}" style="height: {{ height_chart }}px; width: 100%;"></div>
+									</div>
+									<script>
+										var datapoints_{{ data2.kode_template }} = [{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %}{ label: "{{data3.header}}", y: {{data3.total}} }{% endfor %}
+										];
+										var config_{{ data2.kode_template }} = {
+											theme: "light2",
+											legend:{
+												cursor: "pointer",
+												itemclick: "explodePie"
+											},
+											axisY:{
+												crosshair: {
+													enabled: true,
+													snapToDataPoint: true
+												}
+											},
+											axisX:{
+												crosshair: {
+													enabled: true,
+													snapToDataPoint: true
+												}
+											},
+											data: [{
+												type: "pie",
+												startAngle: 240,
+												{% if data2.data_setting.include_legend == 0 %}
+													showInLegend: false,
+												{% else %}
+													showInLegend: true,
+												{% endif %}
+												indexLabelFontSize: 16,
+												dataPoints: datapoints_{{ data2.kode_template }}
+											}]
+										};
+									</script>
+								{% elif data2.tipe == "8"%}
+									<div style="margin:auto">
+										<div id="{{ data2.kode_template }}" style="height: {{ height_chart }}px; width: 100%;"></div>
+									</div>
+									<script>
+										var datapoints_{{ data2.kode_template }} = [{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %}{ label: '{{data3.header}}', y: {{data3.total}} }{% endfor %}
+										];
+										var config_{{ data2.kode_template }} = {
+											theme: "light2",
+											data: [{
+												type: "column",
+												showInLegend: false,
+												legendMarkerColor: "grey",
+												indexLabelFontSize: 16,
+												dataPoints: datapoints_{{ data2.kode_template }}
+											}]
+										};
+									</script>
+								{% elif data2.tipe == "9"%}
+									<div style="margin:auto">
+										<div class="overflow-auto" style="height: {{ height_chart }}px; width: 100%;">
+											<table id="table_{{ data2.kode_template }}" class="table table-striped table-bordered" style="width:100%">
+												<thead>
+													<tr>
+														<th>{{ data2.data_setting.header_name }}</th>
+														<th>{{ data2.data_setting.value_name }}</th>
+													</tr>
+												</thead>
+												<tbody>
+													{% for index3, data3 in data2.data_processed.items %}<tr><td>{{data3.header}}</td><td>{{data3.total}}</td></tr>{% endfor %}
+												<tbody>
+											</table>
+										</div>
+									</div>
+									<script>
+										var datapoints_{{ data2.kode_template }} = [{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %}{ label: "{{data3.header}}", y: {{data3.total}} }{% endfor %}
+										];
+										var config_{{ data2.kode_template }} = {
+											theme: "light2",
+											data: [{
+												type: "column",
+												showInLegend: false,
+												legendMarkerColor: "grey",
+												indexLabelFontSize: 16,
+												dataPoints: datapoints_{{ data2.kode_template }}
+											}]
+										};
+									</script>
+								{% elif data2.tipe == "11" or data2.tipe == "14" or data2.tipe == "15"%}
+									<div id="{{ data2.kode_template }}" style="width: 100%;height:{{ height_chart }}px;"></div>
+									{% if data2.tipe == "15"%}
+										<script>
+											var option_{{ data2.kode_template }} = {
+												tooltip: {
+													trigger: 'axis',
+													axisPointer: {
+														type: 'cross',
+														label: {
+															backgroundColor: '#6a7985'
+														}
+													},
+													snap: true
+												},
+												xAxis: {
+													type: 'category',
+													boundaryGap: false,
+													data: [{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %}"{{data3.header}}"{% endfor %}]
+												},
+												yAxis: {
+													type: 'value'
+												},
+												grid: {
+														top: '5%',
+														left: '1%',
+														right: '6%',
+														containLabel: true
+													},
+												dataZoom: [
+														{
+															show: true,
+															showDataShadow: false,
+															height: '30'
+														},
+														{
+															show: true,
+															yAxisIndex: 0,
+															width: 30,
+															height: '85%',
+															showDataShadow: false
+														}
+													],
+												series: [{
+													data: [{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %}{{data3.total}}{% endfor %}],
+													type: 'line'{% if data2.data_setting.is_filled == "1" or data2.data_setting.is_filled == 1 %},areaStyle: {}{% endif %}
+													{% if data2.data_setting.is_line_straight == "0" or data2.data_setting.is_line_straight == 0 %}, smooth: true{% endif %}
+												}]
+											};
+										</script>
+									{% elif data2.tipe == "11"%}
+										<script>
+											var data_{{ data2.kode_template }} = [{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %}{ name: '{{data3.header}}', value: {{data3.total}} }{% endfor %}];
+											var option_{{ data2.kode_template }} = {
+													{% if data2.data_setting.include_legend == 1 %}
+														legend: {type: 'scroll',
+															orient: 'vertical',right: 10,
+															top: 20,
+															bottom: 20},
+													{% endif %}
+													series: [{
+														type: 'pie',
+														radius: '50%',
+														center: ['50%', '50%'],
+														data: data_{{ data2.kode_template }},
+														animation: true,
+														label: {
+															position: 'outer',
+															alignTo: 'labelLine',
+															margin: 20,
+															formatter: '{b}: {@1} ({d}%)'
+														},
+														left: 0,
+														right: 0,
+														top: 0,
+														bottom: 0
+													}]
+												};
+										</script>
+									{% elif data2.tipe == "14"%}
+										<script>
+											var option_{{ data2.kode_template }} = {
+												tooltip: {
+													trigger: 'axis',
+													axisPointer: {
+														type: 'cross',
+														label: {
+															backgroundColor: '#6a7985'
+														},
+														snap: true
+													}
+												},
+												legend: {
+													data: [
+													{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %}'{{ data3.dataset_name }}'{% endfor %}
+													]
+												},
+												grid: {
+														top: '5%',
+														left: '1%',
+														right: '6%',
+														containLabel: true
+													},
+												xAxis: [
+													{
+														type: 'category',
+														boundaryGap: false,
+														data: [
+														{% for index3, data3 in data2.data_processed.items %}{% if index3 == "0" %}
+														{% for index4, data4 in data3.data.items %}{% if index4 != "0" %},{% endif %} '{{ data4.header }}'{% endfor %}
+														{% endif %}{% endfor %}
+														]
+													}
+												],
+												yAxis: [
+													{
+														type: 'value'
+													}
+												],
+												dataZoom: [
+														{
+															show: true,
+															showDataShadow: false,
+															height: '30'
+														},
+														{
+															show: true,
+															yAxisIndex: 0,
+															width: 30,
+															height: '85%',
+															showDataShadow: false
+														}
+													],
+												series: [
+													{% for index3, data3 in data2.data_processed.items %}{% if index3 != "0" %},{% endif %}
+														{
+															name: '{{ data3.dataset_name }}',
+															type: 'line'{% if data2.data_setting.is_line_straight == "0" or data2.data_setting.is_line_straight == 0 %},smooth: true{% endif %}
+															{% if data2.data_setting.tipe_stack == 0 %},stack: '总量'{% endif %}{% if data2.data_setting.is_filled == "1" or data2.data_setting.is_filled == 1 %},areaStyle: {}{% endif %}
+															{% if data2.data_processed|length_minus_one_to_string == index3 %}
+															//,label: {
+															//	normal: {
+															//		show: true,
+															//		position: 'top'
+															//	}
+															//}
+															{% endif %}
+															,data: [
+															{% for index4, data4 in data3.data.items %}{% if index4 != "0" %},{% endif %} {{ data4.total }}{% endfor %}
+															]
+														}
+													{% endfor %}
+												]
+											};
+										</script>
+									{% endif %}
+								{% endif %}
+							{% endif %}
+						</div>
+					{% endfor %}
+				</div>
+			{% endfor %}
+		</div>
+		<script>
+			//https://stackoverflow.com/questions/40247899/how-to-change-to-string-and-remove-39-from-django-tempalates-context
+			$( document ).ready(function() {
+				{% for index1, data1 in data_design.items %}{% for index2, data2 in data1.items %}
+						{{ data2.additional_script_windows_already_loaded|safe}}
+				{% endfor %}{% endfor %}
+			});
+			
+		</script>
+	</body>
+</html>

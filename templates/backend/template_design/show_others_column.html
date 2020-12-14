@@ -1,0 +1,3 @@
+{% for index,data in list_column.items %}
+	<option value="{{ data.id }}" {% if index == 0 %} selected {% endif %}>{{ data.nama_column }}</option>
+{% endfor %}

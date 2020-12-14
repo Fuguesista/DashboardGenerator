@@ -1,0 +1,22 @@
+<div class="navbar navbar-expand-md navbar-dark bg-dark mb-4" role="navigation">
+	<a class="navbar-brand" href="{{ base_http }}{{ request.get_host }}/backend">Dashboard</a>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+	<div class="collapse navbar-collapse" id="navbarCollapse">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+				<a class="nav-link" href="{{ base_http }}{{ request.get_host }}/backend">Home</a>
+			</li>
+			<li class="nav-item active">
+				<a class="nav-link" href="{{ base_http }}{{ request.get_host }}/backend">About</a>
+			</li>
+			<li class="nav-item active">
+				<span class="nav-link">Hi, {{ username }}</span>
+			</li>
+		</ul>
+		<a class='nav-link' href="{{ base_http }}{{ request.get_host }}/login/logout">
+			<button class="btn btn-outline-danger my-2 my-sm-0" type="submit">Logout</button>
+		</a>
+	</div>
+</div>

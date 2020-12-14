@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		{% include "header-backend.html" %}
+	</head>
+	<body class='bg-light'>
+		{% include "backend/navbar.html" %}
+		<!-- Additional Function (include Buttons) -->
+		<div class='container'>
+			<div class='row'>
+				<div class='col-4'>
+					<button type="button" class="btn btn-primary" id="btn_add_new">+ Add New Dashboard</button>
+				</div>
+			</div>
+		</div>
+		<!-- End Additional Function (include Buttons) -->
+		<!-- Main Div Show -->
+		<div class='container-fluid'>
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+						<th scope="col">Nama Dashboard</th>
+						<th scope="col">Tanggal Pembuatan</th>
+						<th scope="col">Status</th>
+						<th scope="col">Edit</th>
+					</tr>
+				</thead>
+				<tbody>
+					
+					{% for data_dashboard in data_list_dashboard %}
+						<tr>
+							<th scope="row">{{forloop.counter}}</th>
+							<td>{{ data_dashboard.dashboard_name }}</td>
+							<td>{{ data_dashboard.dashboard_date_creation }}</td>
+							{% if data_dashboard.dashboard_state == 1 %}
+								<td> Sedang Proses Load List Tabel </td>
+							{% elif data_dashboard.dashboard_state == 2 %}
+								<td> Silahkan Edit List Tabel </td>
+							{% elif data_dashboard.dashboard_state > 50 and data_dashboard.dashboard_state < 100 %}
+								<td> Sedang Melakukan Feeding Data </td>
+							{% elif data_dashboard.dashboard_state == 100 %}
+								<td> Data Sudah Ready&nbsp;
+									{% if data_dashboard.dashboard_date_update > data_dashboard.dashboard_date_update_design %}
+										<br />(Dashboard Masih di Diproses)
+									{% else %}
+										<br />(Dashboard Sudah Diproses)
+									{% endif %}
+								</td>
+							{%else%}
+								<td></td>
+							{% endif %}
+							
+							<td>
+								<div class="row">
+									{% if data_dashboard.dashboard_state == 2 %}
+										<div class="col-4 mb-2">
+											<button type="button" class="btn btn-primary" onclick="design_relation_tabel('{{ data_dashboard.dashboard_kode }}')">Design Relation</button>
+										</div>
+									{% endif %}
+									{% if data_dashboard.dashboard_state > 50 %}
+										<div class="col-4 mb-2">
+											<button type="button" class="btn btn-primary" onclick="design_dashboard('{{ data_dashboard.dashboard_kode }}')">Design dashboard</button>
+										</div>
+									{% endif %}
+									
+									<div class="col-4 mb-2 text-center">
+										<button type="button" class="btn btn-danger" onclick="btn_delete_dashboard('{{ data_dashboard.dashboard_kode }}')">Delete</button>
+									</div>
+									{% if data_dashboard.dashboard_state == 100 and data_dashboard.dashboard_tipe_data < 3 %}
+										<div class="col-4 mb-2">
+											<button type="button" class="btn btn-secondary" onclick="btn_refeeding_data('{{ data_dashboard.dashboard_kode }}')">Refeeding</button>
+										</div>
+									{% endif %}
+									{% if data_dashboard.dashboard_state == 100 %}
+										{% if data_dashboard.dashboard_date_update <= data_dashboard.dashboard_date_update_design %}
+											<div class="col-4 mb-2">
+												<button type="button" class="btn btn-secondary" onclick="preview_dashboard('{{ data_dashboard.dashboard_kode }}')">Preview</button>
+											</div>
+											<div class="col-4 mb-2">
+												<button type="button" class="btn btn-secondary" onclick="recalculate('{{ data_dashboard.dashboard_kode }}')">Recalculate</button>
+											</div>
+										{% endif %}
+										{% if data_dashboard.dashboard_ready == 1 or data_dashboard.dashboard_ready == "1"%}
+											<div class="col-12 mb-2">
+												<button type="button" class="btn btn-primary" onclick="toggle_public('{{ data_dashboard.dashboard_kode }}', '0')">Public : ON</button>
+											</div>
+										{% else %}
+											<div class="col-12 mb-2">
+												<button type="button" class="btn btn-warning" onclick="toggle_public('{{ data_dashboard.dashboard_kode }}', '1')">Public : OFF</button>
+											</div>
+										{% endif %}
+										<div class="col-12 mb-2">
+											<button type="button" class="btn btn-secondary" onclick="copy_clipboard('{{ data_dashboard.dashboard_kode }}')">Copy Link Preview</button>
+										</div>
+										
+										
+									{% endif %}
+							</td>
+						</tr>
+						
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<!-- End Main Div Show -->
+		<!-- Additional Modal -->
+		<div class="modal fade" id="insert_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			
+		</div>
+		<!-- End Additional Modal -->
+		{% include "footer.html" %}
+		{% include "enable_ajax.html" %}
+		
+		<script>
+			var can_submit = true;
+			$('#btn_add_new').on('click', function(ev) {
+				//console.log("test");
+				$.ajax({
+					type: "POST",
+					cache: false,
+					method: 'POST',
+					url: "{{ base_http }}{{ request.get_host }}/backend/show_form_insert",
+					datatype: "text",
+					success: function(DataReturn) {
+						$("#insert_modal").html(DataReturn);
+						$("#insert_modal").modal('show');
+					}
+				});
+				
+			});
+			
+			function recalculate(kode_dashboard) {
+				window.location.replace("{{ base_http }}{{ request.get_host }}/backend/recalculate_dashboard/" + kode_dashboard);
+			}
+			
+			function Clipboard_CopyTo(value) {
+				var tempInput = document.createElement("input");
+				tempInput.value = value;
+				document.body.appendChild(tempInput);
+				tempInput.select();
+				document.execCommand("copy");
+				document.body.removeChild(tempInput);
+			}
+
+			
+			function copy_clipboard(kode_dashboard) {
+				Clipboard_CopyTo('{{ base_http }}{{ request.get_host }}/frontend/' + kode_dashboard);
+				alert("Copied to Clipboard");
+			}
+			
+			function toggle_public(kode_dashboard, this_next_state) {
+				data_sending = { kode_dashboard_sending:kode_dashboard,
+					next_state:this_next_state};
+				$.ajax({
+					type: "POST",
+					url : "{{ base_http }}{{ request.get_host }}/backend/toggle_public_view",
+					data: data_sending,
+					contentType: 'application/x-www-form-urlencoded',
+					datatype: "text",
+					success: function(DataReturn) {
+						location.reload();
+					}
+				});
+			}
+			
+			function preview_dashboard(kode_dashboard) {
+				window.location.replace("{{ base_http }}{{ request.get_host }}/backend/view_dashboard_generated_container/" + kode_dashboard);
+			}
+			
+			function design_dashboard(kode_dashboard) {
+				window.location.replace("{{ base_http }}{{ request.get_host }}/backend/container_design_dashboard/" + kode_dashboard);
+			}
+			function design_relation_tabel(kode_dashboard) {
+				//alert("{{ base_http }}{{ request.get_host }}/backend/relation_dashboard/" + kode_dashboard);
+				window.location.replace("{{ base_http }}{{ request.get_host }}/backend/relation_dashboard/" + kode_dashboard);
+			}
+
+			function add_dashboard() {
+				if (can_submit) {
+					can_submit = false;
+					var formData = new FormData(document.getElementById("insert_new_dashboard"));
+					$.ajax({
+						type: "POST",
+						url : "{{ base_http }}{{ request.get_host }}/backend/process_new_dashboard",
+						data: formData,
+						cache: false,
+						contentType: false, //this is requireded please see answers above
+						processData: false, //this is requireded please see answers above
+						success: function(DataReturn) {
+							can_submit = true;
+							if (DataReturn == "Berhasil") { // Bila Berhasil
+								alert("Data Berhasil Disimpan");
+								$("#insert_modal").modal('hide');
+								location.reload();
+							}
+							else
+								alert(DataReturn);
+						}
+					});
+				}
+			}
+			
+			function btn_delete_dashboard(kode_dashboard) {
+				if (can_submit) {
+					can_submit = false;
+					data_sending = { kode_dashboard_sending:kode_dashboard };
+					$.ajax({
+						type: "POST",
+						url : "{{ base_http }}{{ request.get_host }}/backend/delete_dashboard",
+						data: data_sending,
+						contentType: 'application/x-www-form-urlencoded',
+						datatype: "text",
+						success: function(DataReturn) {
+							can_submit = true;
+							location.reload();
+						}
+					});
+				}
+			}
+			
+			function btn_refeeding_data(kode_dashboard) {
+				if (can_submit) {
+					can_submit = false;
+					data_sending = { kode_dashboard_sending:kode_dashboard };
+					$.ajax({
+						type: "POST",
+						url : "{{ base_http }}{{ request.get_host }}/backend/refeeding_data",
+						data: data_sending,
+						contentType: 'application/x-www-form-urlencoded',
+						datatype: "text",
+						success: function(DataReturn) {
+							can_submit = true;
+							location.reload();
+						}
+					});
+				}
+			}
+		</script>
+	</body>
+</html>

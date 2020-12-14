@@ -1,0 +1,221 @@
+<div class="modal-dialog" role="document" style="max-width:1000px">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h5 class="modal-title" id="exampleModalLabel">Template Tipe Pie Chart Style 2</h5>
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+		<div class="modal-body" id="modal_body">
+			<form id="data_template" method="post" enctype="multipart/form-data" >
+				<input type="hidden" name="kode_dashboard" value="{{ kode_dashboard }}">
+				<input type="hidden" name="row_selected" value="{{ row_selected }}">
+				<input type="hidden" name="col_selected" value="{{ col_selected }}">
+				<input type="hidden" name="tipe_template" value="7">
+				<div class="container-fluid form-group">
+					<div class="row">
+						<div class="col-12 form-group">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" name="add_border" id="add_border" onchange="toggle_disable_add_border()"><h1 class="h5">Add Border</h1>
+							</div>
+						</div>
+					</div>
+					<div class="row d-none border mb-2 p-1" id="container_add_border">
+						<div class="col-12 form-group">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" name="border_left"><h1 class="h6">Border Left</h1>
+							</div>
+						</div>
+						<div class="col-12 form-group">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" name="border_top"><h1 class="h6">Border Top</h1>
+							</div>
+						</div>
+						<div class="col-12 form-group">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" name="border_right"><h1 class="h6">Border Right</h1>
+							</div>
+						</div>
+						<div class="col-12 form-group">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" name="border_bottom"><h1 class="h6">Border Bottom</h1>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-12 form-group">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" name="include_text" id="include_text" onchange="toggle_disable_include_text()"><h1 class="h5">Include Text</h1>
+							</div>
+						</div>
+					</div>
+					<div class="row d-none border mb-2 p-1" id="container_include_text">
+						<div class="col-3">
+							<label>Isi text : </label>
+						</div>
+						<div class="col-9">
+							<input class="form-control" type="text" name="input_text">
+						</div>
+					</div>
+					<div class="row border mb-2 p-1" id="container_include_data">
+						<div class="col-3">
+							<label>Include Legend : </label>
+						</div>
+						<div class="col-9 form-group">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" name="include_legend">
+							</div>
+						</div>
+						<div class="col-3">
+							<label>Tabel Utama : </label>
+						</div>
+						<div class="col-9">
+							<select name="source_data" id="selected_tabel" onchange="load_others_column()">
+								{% for index,data in list_tabel.items %}
+									<option value="{{ data.id_tabel }}" {% if index == 0 %} selected {% endif %}>{{ data.nama_tabel }}</option>
+								{% endfor %}
+							</select>
+						</div>
+						<div class="col-3 mt-1">
+							<label>Header Value : </label>
+						</div>
+						<div class="col-9 mt-1">
+							<div class="row">
+								<div class="col-7">
+									<select name="column_header" id="list_tabel_combobox_header" class="overflow-auto">
+										{% for index,data in list_column.items %}
+											<option value="{{ data.id }}">{{ data.nama_column }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-3 mt-1">
+							<label>Data Value : </label>
+						</div>
+						<div class="col-9 mt-1">
+							<div class="row">
+								<div class="col-7">
+									<select name="column_data" id="list_tabel_combobox_data" class="overflow-auto">
+										{% for index,data in list_column.items %}
+											<option value="{{ data.id }}">{{ data.nama_column }}</option>
+										{% endfor %}
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-3 mt-1">
+							<label>Calculation : </label>
+						</div>
+						<div class="col-9 mt-1">
+							<div class="row">
+								<div class="col-7">
+									<select name="tipe_calculation_data" class="overflow-auto">
+										<option value="sum" selected>SUM</option>
+										<option value="max">MAX</option>
+										<option value="min">MIN</option>
+										<option value="count">Count</option>
+										<option value="avg">Average</option>
+									</select>
+								</div>
+							</div>
+						</div>
+						<div class="col-3 mt-1">
+							<label>Make Calculation Ranking Lower Than as Others : </label>
+						</div>
+						<div class="col-9 mt-1">
+							<div class="col-12 form-group">
+								<div class="form-check">
+									<input type="checkbox" class="form-check-input" name="include_others" id="include_others">
+									<input type="number" name="minimum_others" value="1">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="row" id="container_where_controller">
+						<div class="col-12 form-group">
+							<div class="form-check">
+								<input type="checkbox" class="form-check-input" name="include_where" id="include_where" onchange="toggle_disable_include_where()"><h1 class="h5">Include Where</h1>
+							</div>
+						</div>
+					</div>
+					<div class="row border mt-1 mb-2 p-1 d-none" id="container_include_where">
+						
+					</div>
+					<div class="row border mb-2 p-1 d-none" id="container_add_where">
+						<button class="btn btn-primary w-100" onclick="add_where()" type="button"><h1 class='h3'>Add Filter</h1></button>
+					</div>
+				</div>
+				
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			<button type="button" class="btn btn-primary" onclick="add_template()">Save</button>
+		</div>
+	</div>
+</div>
+
+<script>
+	function toggle_disable_add_border(){
+		if ($("#add_border").prop("checked") == true)
+			$("#container_add_border").removeClass("d-none");
+		else
+			$("#container_add_border").addClass("d-none");
+	}
+	
+	function toggle_disable_include_text(){
+		if ($("#include_text").prop("checked") == true)
+			$("#container_include_text").removeClass("d-none");
+		else
+			$("#container_include_text").addClass("d-none");
+	}
+	
+	function load_others_column() {
+		tabel_target = $("#selected_tabel").val();
+		this_selected_id_tabel = tabel_target;
+		data_sending = { kode_dashboard_sending:this_kode_dashboard,
+			target_id_tabel:tabel_target};
+		$.ajax({
+			type: "POST",
+			url : "{{ base_http }}{{ request.get_host }}/backend/send_list_column",
+			data: data_sending,
+			contentType: 'application/x-www-form-urlencoded',
+			datatype: "text",
+			success: function(DataReturn) {
+				$("#list_tabel_combobox_header").html(DataReturn);
+				$("#list_tabel_combobox_data").html(DataReturn);
+				reset_where();
+			}
+		});
+	}
+	
+	function reset_where() {
+		$("#container_include_where").html("");
+	}
+	
+	{% for index,data in list_tabel.items %}
+		{% if index == 0 %} var this_selected_id_tabel = {{ data.id_tabel }}; {% endif %}
+	{% endfor %}
+	
+	function add_where(){
+		data_sending = { kode_dashboard_sending:this_kode_dashboard, selected_id_tabel:this_selected_id_tabel,
+		count_row:count_row_where};
+		$.ajax({
+			type: "POST",
+			url : "{{ base_http }}{{ request.get_host }}/backend/generate_row_filter_where",
+			data: data_sending,
+			contentType: 'application/x-www-form-urlencoded',
+			datatype: "text",
+			success: function(DataReturn) {
+				$("#container_include_where").append(DataReturn);
+				count_row_where++;
+			}
+		});
+	}
+	
+	function delete_where(number_row) {
+		$("#row_where_" + number_row).remove();
+	}
+	
+</script>

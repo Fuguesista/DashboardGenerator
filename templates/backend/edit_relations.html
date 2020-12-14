@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		{% include "header-backend.html" %}
+		
+	</head>
+	<body class='bg-light'>
+		{% include "backend/navbar.html" %}
+		<!-- Additional Function (include Buttons) -->
+		<div class='container-fluid'>
+			<form id="list_data_relation" method="post" enctype="multipart/form-data" >
+				<div class="row mb-2">
+					<div class="col-12">
+						<button type="button" class="btn btn-primary float-right" onclick="send_relation()">Save</button>
+					</div>
+				</div>
+				<div class='row'>
+					<div class='col-5 border pt-2' id="header_tabel">
+						<h1 class="h2">List Tabel
+						<button class="ml-2 btn btn-primary mb-2" id="control_column" onclick="set_state_show('2')" type="button">Hide List Column</button>
+						<button class="ml-2 btn btn-primary mb-2 d-none" id="control_column_return" onclick="set_state_show('1')" type="button">Show List Column</button>
+						</h1>
+					</div>
+					<div class='col-7 border pt-2' id="header_column">
+						<h1 class="h2">List Column
+							<button class="ml-2 btn btn-primary mb-2" id="control_tabel" onclick="set_state_show('3')" type="button">Hide List Tabel</button>
+							<button class="ml-2 btn btn-primary mb-2 d-none" id="control_tabel_return" onclick="set_state_show('1')" type="button">Show List Tabel</button>
+						</h1>
+					</div>
+				</div>
+				<div class='row'>
+					<div class='col-5 overflow-auto border pt-2' id="show_tabel">
+						{% for key1, value1 in data_table.items %}
+						<div class="form-check border">
+							<div class="row">
+								<div class="input-group overflow-auto">
+									<div class="col-12">
+										<input type="checkbox" class="mt-2" name="table_{{ key1 }}" value="Y">
+										<label class="form-check-label ml-1" onclick='show_list_column("{{ key1 }}")'>{{ value1.nama_tabel }}</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						{% endfor %}
+					</div>
+					<div class='col-7 overflow-auto border pt-2' id="show_column">
+						<div class="row">
+							<div class="col-12 border mt-1">
+								{% for key1, value1 in data_table.items %}
+									<div class="row border d-none" id="list_column-{{ key1 }}">
+										<div class="col-4 border">
+											<h1 class="h4">Nama Column</h1>
+										</div>
+										<div class="col-1 border">
+											<h1 class="h4">PK</h1>
+										</div>
+										<div class="col-2 border">
+											<h1 class="h4">Tipe</h1>
+										</div>
+										<div class="col-5 border">
+											<h1 class="h4">Relation Foreign</h1>
+										</div>
+										<div class="col-12">
+											<div class="row mt-2">
+												{% for key2, value2 in value1.list_column.items %}
+													<div class="col-4 overflow-auto">
+														<h1 class="h5">{{ value2.nama_column }}</h1>
+													</div>
+													<div class="col-1">
+														<input class="pk_{{ key1 }}" type="checkbox" name="isprimarykey_{{ key1 }}_{{ key2 }}" value="Y">
+													</div>
+													<div class="col-2" style="overflow: hidden">
+														<select name="type_column_{{ key1 }}_{{ key2 }}">
+															<option value="text" selected>Text</option>
+															<option value="number">Number</option>
+															<option value="decimal">Decimal</option>
+														</select>
+													</div>
+													<div class="col-5">
+														<div class="row">
+															<div class="col-5" style="overflow: hidden">
+																<select name="relation_column_{{ key1 }}_{{ key2 }}" onchange="get_others_column('{{ key1 }}','{{ key2 }}', this)">
+																	<option value="--none--" selected>--None--</option>
+																	{% for key3, value3 in data_table.items %}
+																		{% if key3 != key1 %}
+																			<option value="{{ key3 }}">{{ value3.nama_tabel }}</option>
+																		{% endif %}
+																	{% endfor %}
+																</select>
+															</div>
+															<div class="col-7" id="container_relation_column_{{ key1 }}_{{ key2 }}">
+																
+															</div>
+														</div>
+													</div>
+												{% endfor %}
+											</div>
+											<!-- <div class="row"> -->
+												<!-- <button class="ml-2 btn btn-danger mb-2 mt-2" type="button" onclick='remove_pk("{{ key1 }}")'>Remove PK</button> -->
+											<!-- </div> -->
+										</div>
+									</div>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			</form>
+		</div>
+		
+		<!-- End Additional Function (include Buttons) -->
+		{% include "footer.html" %}
+		{% include "enable_ajax.html" %}
+		
+		<script>
+			var can_submit = true;
+			var current_selected_tabel = 0;
+			var show_state = 1;
+			var this_kode_dashboard = "{{ kode_dashboard }}";
+			
+			function show_list_column(index_tabel) {
+				$("#list_column-"+current_selected_tabel).addClass("d-none");
+				$("#list_column-"+index_tabel).removeClass("d-none");
+				current_selected_tabel = index_tabel;
+			}
+			
+			$( document ).ready(function() {
+				$("#list_column-"+current_selected_tabel).removeClass("d-none");
+			});
+			
+			//function remove_pk(index_tabel) {
+				//$("input:radio[class^=pk_" + index_tabel + "]").each(function(i) {
+					//this.checked = false;
+				//});
+			//}
+			
+			function set_state_show(state) {
+				if (state == 1) { //show tabel and show column
+					$("#control_column").removeClass("d-none");
+					$("#control_tabel").removeClass("d-none");
+					$("#show_tabel").removeClass("d-none");
+					$("#show_column").removeClass("d-none");
+					$("#control_column_return").addClass("d-none");
+					$("#control_tabel_return").addClass("d-none");
+					$("#header_tabel").removeClass("d-none");
+					$("#header_column").removeClass("d-none");
+					
+					$("#header_tabel").removeClass("col-12");
+					$("#header_column").removeClass("col-12");
+					$("#header_tabel").addClass("col-5");
+					$("#header_column").addClass("col-7");
+					
+					$("#show_tabel").removeClass("col-12");
+					$("#show_column").removeClass("col-12");
+					$("#show_tabel").addClass("col-5");
+					$("#show_column").addClass("col-7");
+				}
+				else if (state == 2) { //show tabel and hide column
+					$("#control_column").addClass("d-none");
+					$("#control_tabel").addClass("d-none");
+					$("#show_tabel").removeClass("d-none");
+					$("#show_column").addClass("d-none");
+					$("#control_column_return").removeClass("d-none");
+					$("#control_tabel_return").addClass("d-none");
+					$("#header_tabel").removeClass("d-none");
+					$("#header_column").addClass("d-none");
+					
+					$("#header_tabel").addClass("col-12");
+					$("#header_column").removeClass("col-12");
+					$("#header_tabel").addClass("col-5");
+					$("#header_column").removeClass("col-7");
+					
+					$("#show_tabel").addClass("col-12");
+					$("#show_column").removeClass("col-12");
+					$("#show_tabel").addClass("col-5");
+					$("#show_column").removeClass("col-7");
+				}
+				else { //hide tabel and show column
+					$("#control_column").addClass("d-none");
+					$("#control_tabel").addClass("d-none");
+					$("#show_tabel").addClass("d-none");
+					$("#show_column").removeClass("d-none");
+					$("#control_column_return").addClass("d-none");
+					$("#control_tabel_return").removeClass("d-none");
+					$("#header_tabel").addClass("d-none");
+					$("#header_column").removeClass("d-none");
+					
+					$("#header_tabel").removeClass("col-12");
+					$("#header_column").addClass("col-12");
+					$("#header_tabel").removeClass("col-5");
+					$("#header_column").addClass("col-7");
+					
+					$("#show_tabel").removeClass("col-12");
+					$("#show_column").addClass("col-12");
+					$("#show_tabel").removeClass("col-5");
+					$("#show_column").addClass("col-7");
+				}
+			}
+			
+			//https://www.airpair.com/js/jquery-ajax-post-tutorial
+			function get_others_column(current_tabel, current_column, selection) {
+				//alert(target_tabel);
+				//alert(target_column);
+				tabel_target = $(selection).val();
+				data_sending = { kode_dashboard_sending:this_kode_dashboard,
+					id_tabel:current_tabel,
+					id_column:current_column,
+					target_id_tabel:tabel_target};
+				$.ajax({
+					type: "POST",
+					url : "{{ base_http }}{{ request.get_host }}/backend/relation_dashboard_others_column",
+					data: data_sending,
+					contentType: 'application/x-www-form-urlencoded',
+					datatype: "text",
+					success: function(DataReturn) {
+						$("#container_relation_column_" + current_tabel + "_" + current_column).html(DataReturn);
+					}
+				});
+			}
+			
+			function send_relation() {
+				if (can_submit) {
+					can_submit = false;
+					var formData = new FormData(document.getElementById("list_data_relation"));
+					$.ajax({
+						type: "POST",
+						url : "{{ base_http }}{{ request.get_host }}/backend/relation_dashboard_processing/{{ kode_dashboard }}",
+						data: formData,
+						cache: false,
+						contentType: false, //this is requireded please see answers above
+						processData: false, //this is requireded please see answers above
+						success: function(DataReturn) {
+							if (DataReturn == "Berhasil") { // Bila Berhasil
+								alert("Data Berhasil Disimpan");
+								can_submit = true;
+								window.location.replace("{{ base_http }}{{ request.get_host }}/backend");
+							}
+							else
+								alert(DataReturn);
+						}
+					});
+				}
+			}
+			
+			<!-- https://stackoverflow.com/questions/17897405/jquery-uncheck-radio-button-based-on-class -->
+			
+		</script>
+		
+	</body>
+</html>

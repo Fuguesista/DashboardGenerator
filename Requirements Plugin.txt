@@ -1,6 +1,5 @@
-install -y python3-venv
-install build-essential libssl-dev libffi-dev python-dev
-install -y python3-pip
+install build-essential libssl-dev libffi-dev python3-dev
+install python3-pip
 install postgresql-client
-install -y mongodb
+install mongodb
 install mysql-client
